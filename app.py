@@ -40,6 +40,29 @@ def search_flights(origin, destination, date):
     response = requests.post(url, json=body, headers=headers, timeout=30)
     return response.json()
 
+# Pick out the few details the results page needs from one Duffel offer
+
+
+def simplify_offer(offer):
+    journey = offer["slices"][0]
+    segments = journey["segments"]
+    first_flight = segments[0]
+    last_flight = segments[-1]
+
+    return {
+        "id": offer["id"],
+        "airline": offer["owner"]["name"],
+        "logo": offer["owner"]["logo_symbol_url"],
+        "price": float(offer["total_amount"]),
+        "currency": offer["total_currency"],
+        "origin": first_flight["origin"]["iata_code"],
+        "destination": last_flight["destination"]["iata_code"],
+        "departing_at": first_flight["departing_at"],
+        "arriving_at": last_flight["arriving_at"],
+        "stops": len(segments) - 1,
+        "duration": journey["duration"],
+    }
+
 
 @app.route("/")
 def home():
@@ -57,7 +80,13 @@ def health():
 
 @app.route("/api/test-search")
 def test_search():
-    return search_flights("JUB", "NBO", "2026-12-10")
+    result = search_flights("JUB", "NBO", "2026-12-10")
+
+    flights = []
+    for offer in result["data"]["offers"]:
+        flights.append(simplify_offer(offer))
+
+    return {"flights": flights}
 
 
 if __name__ == "__main__":
