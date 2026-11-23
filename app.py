@@ -2,7 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request
 
 # Read the values in .env so the app can use them
 load_dotenv()
@@ -106,12 +106,20 @@ def home():
 def health():
     return {"status": "ok"}
 
-# Temporary route to see what Duffel sends back
+# Search flights using the details the visitor sends in the address
 
 
-@app.route("/api/test-search")
-def test_search():
-    result = search_flights("JUB", "NBO", "2026-12-10")
+@app.route("/api/search")
+def search():
+    origin = request.args.get("origin", "").strip().upper()
+    destination = request.args.get("destination", "").strip().upper()
+    date = request.args.get("date", "").strip()
+
+    if not origin or not destination or not date:
+        message = "Choose where you are flying from, where to, and a date."
+        return {"error": message}, 400
+
+    result = search_flights(origin, destination, date)
 
     flights = []
     for offer in result["data"]["offers"]:
