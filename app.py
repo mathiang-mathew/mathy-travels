@@ -40,6 +40,35 @@ def search_flights(origin, destination, date):
     response = requests.post(url, json=body, headers=headers, timeout=30)
     return response.json()
 
+# Turn Duffel's duration code like "PT6H25M" into a number of minutes
+
+
+def duration_in_minutes(duration):
+    total = 0
+    number = ""
+
+    for character in duration:
+        if character.isdigit():
+            number = number + character
+        elif character == "D":
+            total = total + int(number) * 24 * 60
+            number = ""
+        elif character == "H":
+            total = total + int(number) * 60
+            number = ""
+        elif character == "M":
+            total = total + int(number)
+            number = ""
+    return total
+
+# Turn a number of minutes into a label people can read, like "6h 25m"
+
+
+def format_duration(minutes):
+    hours = minutes // 60
+    leftover_minutes = minutes % 60
+    return f"{hours}h {leftover_minutes}m"
+
 # Pick out the few details the results page needs from one Duffel offer
 
 
@@ -48,6 +77,7 @@ def simplify_offer(offer):
     segments = journey["segments"]
     first_flight = segments[0]
     last_flight = segments[-1]
+    minutes = duration_in_minutes(journey["duration"])
 
     return {
         "id": offer["id"],
@@ -60,7 +90,8 @@ def simplify_offer(offer):
         "departing_at": first_flight["departing_at"],
         "arriving_at": last_flight["arriving_at"],
         "stops": len(segments) - 1,
-        "duration": journey["duration"],
+        "duration_minutes": minutes,
+        "duration_text": format_duration(minutes),
     }
 
 
