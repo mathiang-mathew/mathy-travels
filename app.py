@@ -119,7 +119,14 @@ def search():
         message = "Choose where you are flying from, where to, and a date."
         return {"error": message}, 400
 
-    result = search_flights(origin, destination, date)
+    try:
+        result = search_flights(origin, destination, date)
+    except requests.exceptions.RequestException:
+        message = "We could not reach the airline system. Try again in a minute."
+        return {"error": message}, 503
+    if "errors" in result:
+        message = result["errors"][0]["message"]
+        return {"error": message}, 400
 
     flights = []
     for offer in result["data"]["offers"]:
