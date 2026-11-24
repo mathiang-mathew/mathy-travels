@@ -61,6 +61,62 @@
           <h1>Book flights from Juba</h1>
           <p>Search, compare and book in a few minutes</p>
         </div>
+        <form class="search-form" id="search-form">
+          <div class="field">
+            <label for="origin">From</label>
+            <input
+              id="origin"
+              name="origin"
+              type="text"
+              value="JUB"
+              placeholder="Where to?"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="destination">To</label>
+            <input
+              id="destination"
+              name="destination"
+              type="text"
+              placeholder="Where to?"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="date">Depart</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+
+          <div class="field">
+            <label for="adults">Travellers</label>
+            <select name="adults" id="adults">
+              <option value="1">1 adult</option>
+              <option value="2">2 adults</option>
+              <option value="3">3 adults</option>
+              <option value="4">4 adults</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="cabin">Cabin</label>
+            <select name="cabin" id="cabin">
+              <option value="economy">Economy</option>
+              <option value="premium_economy">Premium economy</option>
+              <option value="business">Business</option>
+              <option value="first">First</option>
+            </select>
+          </div>
+
+          <button class="search-button" type="submit">
+            <span class="material-symbols-outlined" aria-hidden="true"
+              >search</span
+            >
+            Search flights
+          </button>
+        </form>
       </section>
     </main>
 
