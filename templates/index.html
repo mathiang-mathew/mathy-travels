@@ -9,6 +9,21 @@
       name="description"
       content="Search, compare and book flights from Juba to Nairobi, Entebbe, Addis Ababa, Dubai and more."
     />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.ico') }}"
+      sizes="any"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/favicon-32.png') }}"
+      sizes="32x32"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='images/apple-touch-icon.png') }}"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,8 +41,28 @@
     />
   </head>
   <body>
-    <h1>Mathy Travels</h1>
-    <p>Flight search is coming soon.</p>
+    <header class="site-header">
+      <a class="logo" href="/">
+        <img
+          class="logo-image"
+          src="{{ url_for('static', filename='images/logo-blue.png') }}"
+          alt="Mathy Travels"
+        />
+      </a>
+
+      <nav class="menu" aria-label="Main Menu">
+        <a class="menu-link" href="#search">Search flights</a>
+        <a class="menu-link" href="#bookings">My bookings</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero" id="search">
+        <div class="hero-text">
+          <h1>Book flights from Juba</h1>
+          <p>Search, compare and book in a few minutes</p>
+        </div>
+      </section>
+    </main>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </body>
