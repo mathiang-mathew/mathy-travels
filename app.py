@@ -14,7 +14,11 @@ app = Flask(__name__)
 # Ask Duffel for flights on one route and date, and return its answer
 
 
-def search_flights(origin, destination, date):
+def search_flights(origin, destination, date, adults, cabin):
+    passengers = []
+    for number in range(adults):
+        passengers.append({"type": "adult"})
+
     headers = {
         "Authorization": f"Bearer {DUFFEL_TOKEN}",
         "Duffel-Version": "v2",
@@ -31,8 +35,8 @@ def search_flights(origin, destination, date):
                     "departure_date": date,
                 }
             ],
-            "passengers": [{"type": "adult"}],
-            "cabin_class": "economy",
+            "passengers": passengers,
+            "cabin_class": cabin,
         }
     }
 
@@ -115,12 +119,24 @@ def search():
     destination = request.args.get("destination", "").strip().upper()
     date = request.args.get("date", "").strip()
 
+    adults = request.args.get("adults", "1")
+    cabin = request.args.get("cabin", "economy")
+
+    if not adults.isdigit() or int(adults) < 1 or int(adults) > 4:
+        return {"error": "Choose between 1 and 4 travellers."}, 400
+
+    allowed_cabins = ["economy", "premium_economy", "business", "first"]
+    if cabin not in allowed_cabins:
+        return {"error": "Choose economy, premium economy, business or first"}
+
+    adults = int(adults)
+
     if not origin or not destination or not date:
         message = "Choose where you are flying from, where to, and a date."
         return {"error": message}, 400
 
     try:
-        result = search_flights(origin, destination, date)
+        result = search_flights(origin, destination, date, adults, cabin)
     except requests.exceptions.RequestException:
         message = "We could not reach the airline system. Try again in a minute."
         return {"error": message}, 503
