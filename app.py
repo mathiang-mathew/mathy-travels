@@ -2,7 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, render_template, request
 
 # Read the values in .env so the app can use them
 load_dotenv()
@@ -97,7 +97,7 @@ def simplify_offer(offer):
 
 @app.route("/")
 def home():
-    return "Mathy Travels is running"
+    return render_template("index.html")
 
 # A small check that tells us the server is up and answering
 

@@ -1,0 +1,32 @@
+/* Design styles: the colours, font and sizes used across the site */
+:root {
+  --blue: #1d64f2;
+  --blue-dark: #1652c9;
+  --blue-soft: #eaf1ff;
+  --ink: #1b1f27;
+  --grey: #6b7280;
+  --line: #e3e6eb;
+  --canvas: #f3f4f6;
+  --white: #ffffff;
+  --red: #c62828;
+  --green: #1e7d4f;
+
+  --radius-panel: 16px;
+  --radius-field: 10px;
+
+  --font: "Figtree", system-ui, sans-serif;
+}
+
+/* Make width and height include padding and borders, so sizes add up as expected */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--canvas);
+}
