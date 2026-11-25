@@ -164,23 +164,55 @@
           <h2>Popular routes from Juba</h2>
           <div class="routes-list">
             <button class="route-card" type="button" data-destination="NBO">
-              <span class="route-code">NBO</span>
-              <span class="route-city">Nairobi, Kenya</span>
+              <img
+                class="route-image"
+                src="{{ url_for('static', filename='images/nairobi.jpg') }}"
+                alt=""
+                loading="lazy"
+              />
+              <span class="route-text">
+                <span class="route-code">NBO</span>
+                <span class="route-city">Nairobi, Kenya</span>
+              </span>
             </button>
 
             <button class="route-card" type="button" data-destination="EBB">
-              <span class="route-code">EBB</span>
-              <span class="route-city">Entebbe, Uganda</span>
+              <img
+                class="route-image"
+                src="{{ url_for('static', filename='images/entebbe.jpg') }}"
+                alt=""
+                loading="lazy"
+              />
+              <span class="route-text">
+                <span class="route-code">EBB</span>
+                <span class="route-city">Entebbe, Uganda</span>
+              </span>
             </button>
 
             <button class="route-card" type="button" data-destination="ADD">
-              <span class="route-code">ADD</span>
-              <span class="route-city">Addis Ababa, Ethiopia</span>
+              <img
+                class="route-image"
+                src="{{ url_for('static', filename='images/addis-ababa.jpg') }}"
+                alt=""
+                loading="lazy"
+              />
+              <span class="route-text">
+                <span class="route-code">ADD</span>
+                <span class="route-city">Addis Ababa, Ethiopia</span>
+              </span>
             </button>
 
             <button class="route-card" type="button" data-destination="DXB">
-              <span class="route-code">DXB</span>
-              <span class="route-city">Dubai, United Arab Emirates</span>
+              <img
+                class="route-image"
+                src="{{ url_for('static', filename='images/dubai.jpg') }}"
+                alt=""
+                loading="lazy"
+              />
+              <span class="route-text">
+                <span class="route-code">DXB</span>
+                <span class="route-city">Dubai, United Arab Emirates</span>
+              </span>
             </button>
           </div>
         </section>
