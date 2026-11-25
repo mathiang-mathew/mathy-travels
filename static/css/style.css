@@ -323,3 +323,47 @@ body {
 .route-city {
   color: var(--grey);
 }
+
+/* Sort, filter and search controls above the flight cards */
+.results-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.toolbar-field {
+  flex: 1 1 160px;
+  padding: 8px 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+}
+
+.toolbar-search {
+  flex: 2 1 240px;
+}
+
+.toolbar-field:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.toolbar-field label {
+  display: block;
+  font-size: 13px;
+  color: var(--grey);
+}
+
+.toolbar-field select,
+.toolbar-field input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}

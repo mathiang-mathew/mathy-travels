@@ -123,6 +123,42 @@
         <section class="results" id="results" hidden>
           <p class="results-message" id="results-message" role="status"></p>
 
+          <div class="results-toolbar">
+            <div class="toolbar-field">
+              <label for="sort-by">Sort by</label>
+              <select id="sort-by">
+                <option value="cheapest">Cheapest first</option>
+                <option value="fastest">Fastest first</option>
+                <option value="earliest">Earliest departure</option>
+                <option value="latest">Lastest departure</option>
+              </select>
+            </div>
+
+            <div class="toolbar-field">
+              <label for="filter-stops">Stops</label>
+              <select id="filter-stops">
+                <option value="any">Any number</option>
+                <option value="direct">Direct only</option>
+              </select>
+            </div>
+
+            <div class="toolbar-field">
+              <label for="filter-airline">Airline</label>
+              <select id="filter-airline">
+                <option value="all">All airlines</option>
+              </select>
+            </div>
+
+            <div class="toolbar-field toolbar-search">
+              <label for="search-results">Search</label>
+              <input
+                id="search-results"
+                type="search"
+                placeholder="Airline or flight number"
+              />
+            </div>
+          </div>
+
           <div class="results-list" id="results-list"></div>
 
           <template id="flight-card-template">
