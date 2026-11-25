@@ -124,6 +124,39 @@
           Search for a flight to see prices here.
         </p>
         <div class="results-list" id="results-list"></div>
+        <template id="flight-card-template">
+          <article class="flight-card">
+            <div class="flight-airline">
+              <img class="airline-logo" src="" alt="" />
+              <span class="airline-name"></span>
+            </div>
+
+            <div class="flight-times">
+              <div class="flight-end">
+                <span class="flight-time departure-time"></span>
+                <span class="flight-code origin-code"></span>
+              </div>
+
+              <div class="flight-path">
+                <span class="flight-duration"></span>
+                <span class="flight-line"></span>
+                <span class="flight-stops"></span>
+              </div>
+
+              <div class="flight-end">
+                <span class="flight-time arrival-time"></span>
+                <span class="flight-code destination-code"></span>
+              </div>
+            </div>
+
+            <div class="flight-price">
+              <span class="price-amount"></span>
+              <span class="price-note"></span>
+
+              <button class="select-button" type="button">Select</button>
+            </div>
+          </article>
+        </template>
       </section>
     </main>
 
