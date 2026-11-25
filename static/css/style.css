@@ -213,6 +213,7 @@ body {
 .flight-end {
   display: flex;
   flex-direction: column;
+  min-width: 96px;
 }
 
 .flight-time {
@@ -366,4 +367,16 @@ body {
   font-size: 15px;
   font-weight: 600;
   color: var(--ink);
+}
+
+/* Airlines name with the flight number in small grey text below */
+.airline-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.flight-number {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--grey);
 }

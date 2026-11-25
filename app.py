@@ -81,6 +81,13 @@ def simplify_offer(offer):
     segments = journey["segments"]
     first_flight = segments[0]
     last_flight = segments[-1]
+
+    flight_numbers = []
+    for segment in segments:
+        carrier = segment["marketing_carrier"]["iata_code"]
+        number = segment["marketing_carrier_flight_number"].lstrip("0")
+        flight_numbers.append(carrier + " " + number)
+
     minutes = duration_in_minutes(journey["duration"])
 
     return {
@@ -96,6 +103,7 @@ def simplify_offer(offer):
         "stops": len(segments) - 1,
         "duration_minutes": minutes,
         "duration_text": format_duration(minutes),
+        "flight_numbers": ", ".join(flight_numbers),
     }
 
 

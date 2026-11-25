@@ -62,6 +62,7 @@ function createFlightCard(flight, adults) {
   }
 
   card.querySelector(".airline-name").textContent = flight.airline;
+  card.querySelector(".flight-number").textContent = flight.flight_numbers;
   card.querySelector(".departure-time").textContent = formatTime(
     flight.departing_at,
   );
@@ -139,8 +140,13 @@ function matchesFilters(flight) {
   }
 
   const searchText = searchInput.value.trim().toLowerCase();
-  if (searchText !== "" && !flight.airline.toLowerCase().includes(searchText)) {
-    return false;
+  if (searchText !== "") {
+    const airline = flight.airline.toLowerCase();
+    const numbers = flight.flight_numbers.toLowerCase();
+
+    if (!airline.includes(searchText) && !numbers.includes(searchText)) {
+      return false;
+    }
   }
 
   return true;
@@ -188,7 +194,7 @@ function updateResults() {
     resultsMessage.textContent = allFlights.length + " flights found";
   } else {
     resultsMessage.textContent =
-      " Showing " + matching.length + " of" + allFlights.length + " flights";
+      " Showing " + matching.length + " of " + allFlights.length + " flights";
   }
 
   showFlights(matching, searchAdults);
