@@ -5,6 +5,10 @@ const resultsMessage = document.getElementById("results-message");
 const resultsList = document.getElementById("results-list");
 const cardTemplate = document.getElementById("flight-card-template");
 const resultsSection = document.getElementById("results");
+const routeButtons = document.querySelectorAll(".route-card");
+const originInput = document.getElementById("origin");
+const destinationInput = document.getElementById("destination");
+const dateInput = document.getElementById("date");
 
 // Turn "2026-11-27T20:07:00" into "20:07"
 function formatTime(dateText) {
@@ -29,6 +33,13 @@ function formatPrice(price, currency) {
     maximumFractionDigits: 2,
   });
   return currency + " " + amount;
+}
+
+// Give a date some days from today, in the format the date box uses, like "2026-12-02"
+function dateInDays(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
 // Copy the blank card and fill in one flight's detials
@@ -97,6 +108,7 @@ searchForm.addEventListener("submit", async function (event) {
   const searchDetails = new URLSearchParams(formData);
 
   resultsSection.hidden = false;
+  resultsSection.scrollIntoView();
   resultsMessage.textContent = "Searching for flights...";
 
   const response = await fetch("/api/search?" + searchDetails.toString());
@@ -118,3 +130,17 @@ searchForm.addEventListener("submit", async function (event) {
 
   showFlights(data.flights, adults);
 });
+
+// Clicking a popular route fills in the form and searches straight away
+for (const button of routeButtons) {
+  button.addEventListener("click", function () {
+    originInput.value = "JUB";
+    destinationInput.value = button.dataset.destination;
+
+    if (dateInput.value === "") {
+      dateInput.value = dateInDays(7);
+    }
+
+    searchForm.requestSubmit();
+  });
+}
