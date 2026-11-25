@@ -9,6 +9,14 @@ const routeButtons = document.querySelectorAll(".route-card");
 const originInput = document.getElementById("origin");
 const destinationInput = document.getElementById("destination");
 const dateInput = document.getElementById("date");
+const sortSelect = document.getElementById("sort-by");
+const stopsSelect = document.getElementById("filter-stops");
+const airlineSelect = document.getElementById("filter-airline");
+const searchInput = document.getElementById("search-results");
+
+// The full list from the last search, and how many adults it was for
+let allFlights = [];
+let searchAdults = 1;
 
 // Turn "2026-11-27T20:07:00" into "20:07"
 function formatTime(dateText) {
@@ -100,6 +108,92 @@ function showFlights(flights, adults) {
   }
 }
 
+// Fill the airlines dropdown with the airlines found in this search
+function fillAirlineOptions(flights) {
+  airlineSelect.innerHTML = '<option value="all">All airlines</option>';
+
+  const airlineNames = [];
+  for (const flight of flights) {
+    if (!airlineNames.includes(flight.airline)) {
+      airlineNames.push(flight.airline);
+    }
+  }
+  airlineNames.sort();
+
+  for (const name of airlineNames) {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    airlineSelect.appendChild(option);
+  }
+}
+
+// Check one flight against the stops, airline and search box choices
+function matchesFilters(flight) {
+  if (stopsSelect.value === "direct" && flight.stops > 0) {
+    return false;
+  }
+
+  if (airlineSelect.value !== "all" && flight.airline !== airlineSelect.value) {
+    return false;
+  }
+
+  const searchText = searchInput.value.trim().toLowerCase();
+  if (searchText !== "" && !flight.airline.toLowerCase().includes(searchText)) {
+    return false;
+  }
+
+  return true;
+}
+
+// Put a list of flights in the order the visitor chose
+function sortFlights(flights, sortBy) {
+  if (sortBy === "cheapest") {
+    flights.sort(function (a, b) {
+      return a.price - b.price;
+    });
+  } else if (sortBy === "fastest") {
+    flights.sort(function (a, b) {
+      return a.duration_minutes - b.duration_minutes;
+    });
+  } else if (sortBy === "earliest") {
+    flights.sort(function (a, b) {
+      return a.departing_at.localeCompare(b.departing_at);
+    });
+  } else if (sortBy === "latest") {
+    flights.sort(function (a, b) {
+      return b.departing_at.localeCompare(a.departing_at);
+    });
+  }
+}
+
+//apply the filters and sort, then show the matching flights with a short message
+function updateResults() {
+  const matching = [];
+  for (const flight of allFlights) {
+    if (matchesFilters(flight)) {
+      matching.push(flight);
+    }
+  }
+
+  sortFlights(matching, sortSelect.value);
+
+  if (allFlights.length === 0) {
+    resultsMessage.textContent =
+      "No flights found for this route and date. Try another date.";
+  } else if (matching.length === 0) {
+    resultsMessage.textContent =
+      "No flights match these filters. Try clearing the search or choosing any number of stops.";
+  } else if (matching.length === allFlights.length) {
+    resultsMessage.textContent = allFlights.length + " flights found";
+  } else {
+    resultsMessage.textContent =
+      " Showing " + matching.length + " of" + allFlights.length + " flights";
+  }
+
+  showFlights(matching, searchAdults);
+}
+
 // When the visitor presses "Search flights", search without reloading the page
 searchForm.addEventListener("submit", async function (event) {
   event.preventDefault();
@@ -120,15 +214,12 @@ searchForm.addEventListener("submit", async function (event) {
     return;
   }
 
-  const adults = Number(formData.get("adults"));
+  allFlights = data.flights;
+  searchAdults = Number(formData.get("adults"));
+  searchInput.value = "";
 
-  if (data.flights.length === 1) {
-    resultsMessage.textContent = "1 flight found";
-  } else {
-    resultsMessage.textContent = data.flights.length + " flights found";
-  }
-
-  showFlights(data.flights, adults);
+  fillAirlineOptions(allFlights);
+  updateResults();
 });
 
 // Clicking a popular route fills in the form and searches straight away
@@ -144,3 +235,9 @@ for (const button of routeButtons) {
     searchForm.requestSubmit();
   });
 }
+
+// Update the cards whenever a sort, filter or search choice changes
+sortSelect.addEventListener("change", updateResults);
+stopsSelect.addEventListener("change", updateResults);
+airlineSelect.addEventListener("change", updateResults);
+searchInput.addEventListener("input", updateResults);
