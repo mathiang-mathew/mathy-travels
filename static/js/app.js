@@ -15,8 +15,12 @@ const airlineSelect = document.getElementById("filter-airline");
 const searchInput = document.getElementById("search-results");
 
 // The full list from the last search, and how many adults it was for
+let searchCabin = "Ecomony";
 let allFlights = [];
 let searchAdults = 1;
+
+// The whatsApp number that receives booking requests: country code and number, no + or spaces
+const WHATSAPP_NUMBER = "211928934830";
 
 // Turn "2026-11-27T20:07:00" into "20:07"
 function formatTime(dateText) {
@@ -32,6 +36,51 @@ function formatStops(stops) {
     return "1 stop";
   }
   return stops + " stops";
+}
+
+// "1 adult" or "2 adults"
+function formatAdults(adults) {
+  if (adults === 1) {
+    return "1 adult";
+  }
+  return adults + " adults";
+}
+
+// Build a whatsApp link with a ready-made booking request for one flight
+function whatsappLink(flight) {
+  const message =
+    "Hello Mathy Travels, I would like to book this flight:\n" +
+    flight.airline +
+    " " +
+    flight.flight_numbers +
+    "\n" +
+    flight.origin +
+    " to " +
+    flight.destination +
+    " on " +
+    flight.departing_at.slice(0, 10) +
+    "\n" +
+    "Departs " +
+    formatTime(flight.departing_at) +
+    ", arrives " +
+    formatTime(flight.arriving_at) +
+    "\n" +
+    "Travellers: " +
+    formatAdults(searchAdults) +
+    ", " +
+    searchCabin +
+    "\n" +
+    "Price shown: " +
+    formatPrice(flight.price, flight.currency) +
+    "\n" +
+    "Offer reference: " +
+    flight.id +
+    "\n" +
+    "Please confirm availability and the final price.";
+
+  return (
+    "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message)
+  );
 }
 
 // Turn 1522.9 into "USD 1,552.90"
@@ -88,13 +137,7 @@ function createFlightCard(flight, adults) {
     flight.price,
     flight.currency,
   );
-
-  if (adults === 1) {
-    card.querySelector(".price-note").textContent = "total for 1 adult";
-  } else {
-    card.querySelector(".price-note").textContent =
-      "total for " + adults + " adults";
-  }
+  card.querySelector(".book-link").href = whatsappLink(flight);
 
   return card;
 }
@@ -223,6 +266,7 @@ searchForm.addEventListener("submit", async function (event) {
   allFlights = data.flights;
   searchAdults = Number(formData.get("adults"));
   searchInput.value = "";
+  searchCabin = document.getElementById("cabin").selectedOptions[0].textContent;
 
   fillAirlineOptions(allFlights);
   updateResults();
