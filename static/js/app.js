@@ -4,6 +4,7 @@ const searchForm = document.getElementById("search-form");
 const resultsMessage = document.getElementById("results-message");
 const resultsList = document.getElementById("results-list");
 const cardTemplate = document.getElementById("flight-card-template");
+const resultsSection = document.getElementById("results");
 
 // Turn "2026-11-27T20:07:00" into "20:07"
 function formatTime(dateText) {
@@ -51,6 +52,17 @@ function createFlightCard(flight, adults) {
   card.querySelector(".arrival-time").textContent = formatTime(
     flight.arriving_at,
   );
+
+  // Show "+1" (or more) when the flight lands on a later day than it leaves
+  const departureDay = new Date(flight.departing_at.slice(0, 10));
+  const arrivalDay = new Date(flight.arriving_at.slice(0, 10));
+  const daysLater = (arrivalDay - departureDay) / 86400000;
+
+  if (daysLater > 0) {
+    card.querySelector(".arrival-time").textContent =
+      formatTime(flight.arriving_at) + " +" + daysLater;
+  }
+
   card.querySelector(".destination-code").textContent = flight.destination;
   card.querySelector(".price-amount").textContent = formatPrice(
     flight.price,
@@ -84,6 +96,7 @@ searchForm.addEventListener("submit", async function (event) {
   const formData = new FormData(searchForm);
   const searchDetails = new URLSearchParams(formData);
 
+  resultsSection.hidden = false;
   resultsMessage.textContent = "Searching for flights...";
 
   const response = await fetch("/api/search?" + searchDetails.toString());
@@ -92,6 +105,7 @@ searchForm.addEventListener("submit", async function (event) {
   if (data.error) {
     resultsList.innerHTML = "";
     resultsMessage.textContent = data.error;
+    return;
   }
 
   const adults = Number(formData.get("adults"));

@@ -119,45 +119,47 @@
         </form>
       </section>
 
-      <section class="results" id="results">
-        <p class="results-message" id="results-message" role="status">
-          Search for a flight to see prices here.
-        </p>
-        <div class="results-list" id="results-list"></div>
-        <template id="flight-card-template">
-          <article class="flight-card">
-            <div class="flight-airline">
-              <img class="airline-logo" src="" alt="" />
-              <span class="airline-name"></span>
-            </div>
+      <div class="page-content">
+        <section class="results" id="results" hidden>
+          <p class="results-message" id="results-message" role="status"></p>
 
-            <div class="flight-times">
-              <div class="flight-end">
-                <span class="flight-time departure-time"></span>
-                <span class="flight-code origin-code"></span>
+          <div class="results-list" id="results-list"></div>
+
+          <template id="flight-card-template">
+            <article class="flight-card">
+              <div class="flight-airline">
+                <img class="airline-logo" src="" alt="" />
+                <span class="airline-name"></span>
               </div>
 
-              <div class="flight-path">
-                <span class="flight-duration"></span>
-                <span class="flight-line"></span>
-                <span class="flight-stops"></span>
+              <div class="flight-times">
+                <div class="flight-end">
+                  <span class="flight-time departure-time"></span>
+                  <span class="flight-code origin-code"></span>
+                </div>
+
+                <div class="flight-path">
+                  <span class="flight-duration"></span>
+                  <span class="flight-line"></span>
+                  <span class="flight-stops"></span>
+                </div>
+
+                <div class="flight-end">
+                  <span class="flight-time arrival-time"></span>
+                  <span class="flight-code destination-code"></span>
+                </div>
               </div>
 
-              <div class="flight-end">
-                <span class="flight-time arrival-time"></span>
-                <span class="flight-code destination-code"></span>
+              <div class="flight-price">
+                <span class="price-amount"></span>
+                <span class="price-note"></span>
+
+                <button class="select-button" type="button">Select</button>
               </div>
-            </div>
-
-            <div class="flight-price">
-              <span class="price-amount"></span>
-              <span class="price-note"></span>
-
-              <button class="select-button" type="button">Select</button>
-            </div>
-          </article>
-        </template>
-      </section>
+            </article>
+          </template>
+        </section>
+      </div>
     </main>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
