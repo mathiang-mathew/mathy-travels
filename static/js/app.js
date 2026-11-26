@@ -272,8 +272,8 @@ async function loadAirportSuggestions(input, list) {
 
     list.innerHTML = "";
     for (const airport of data.airports) {
-      const option = document.createElemenet("option");
-      option.value = airports.code;
+      const option = document.createElement("option");
+      option.value = airport.code;
       option.textContent = airport.name + ", " + airport.city;
       list.appendChild(option);
     }
