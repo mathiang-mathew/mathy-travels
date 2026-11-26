@@ -13,6 +13,8 @@ const sortSelect = document.getElementById("sort-by");
 const stopsSelect = document.getElementById("filter-stops");
 const airlineSelect = document.getElementById("filter-airline");
 const searchInput = document.getElementById("search-results");
+const searchButton = document.querySelector(".search-button");
+const searchButtonText = document.querySelector(".search-button-text");
 
 // The full list from the last search, and how many adults it was for
 let searchCabin = "Ecomony";
@@ -90,6 +92,17 @@ function formatPrice(price, currency) {
     maximumFractionDigits: 2,
   });
   return currency + " " + amount;
+}
+
+// Show that a search is running, or put the button back to normal
+function setSearching(isSearching) {
+  searchButton.disabled = isSearching;
+
+  if (isSearching) {
+    searchButtonText.textContent = "Searching...";
+  } else {
+    searchButtonText.textContent = "Search flights";
+  }
 }
 
 // Give a date some days from today, in the format the date box uses, like "2026-12-02"
@@ -254,8 +267,21 @@ searchForm.addEventListener("submit", async function (event) {
   resultsSection.scrollIntoView();
   resultsMessage.textContent = "Searching for flights...";
 
-  const response = await fetch("/api/search?" + searchDetails.toString());
-  const data = await response.json();
+  resultsList.innerHTML = "";
+  setSearching(true);
+
+  let data;
+  try {
+    const response = await fetch("/api/search?" + searchDetails.toString());
+    data = await response.json();
+  } catch (error) {
+    setSearching(false);
+    resultsMessage.textContent =
+      "We could not connect. Check your internet connection and try again.";
+    return;
+  }
+
+  setSearching(false);
 
   if (data.error) {
     resultsList.innerHTML = "";
@@ -291,3 +317,6 @@ sortSelect.addEventListener("change", updateResults);
 stopsSelect.addEventListener("change", updateResults);
 airlineSelect.addEventListener("change", updateResults);
 searchInput.addEventListener("input", updateResults);
+
+// Only allow dates from tomorrow onwards in the calendar
+dateInput.min = dateInDays(1);
