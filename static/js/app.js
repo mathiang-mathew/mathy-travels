@@ -17,9 +17,10 @@ const searchButton = document.querySelector(".search-button");
 const searchButtonText = document.querySelector(".search-button-text");
 
 // The full list from the last search, and how many adults it was for
-let searchCabin = "Ecomony";
 let allFlights = [];
 let searchAdults = 1;
+let searchCabin = "Ecomony";
+let suggestTimer;
 
 // The whatsApp number that receives booking requests: country code and number, no + or spaces
 const WHATSAPP_NUMBER = "211928934830";
@@ -256,6 +257,41 @@ function updateResults() {
   showFlights(matching, searchAdults);
 }
 
+// Ask our servers for airports matching what was typed, and fill that box's suggestion list
+async function loadAirportSuggestions(input, list) {
+  const query = input.value.trim();
+  if (query.length < 2) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/airports?query=" + encodeURIComponent(query),
+    );
+    const data = await response.json();
+
+    list.innerHTML = "";
+    for (const airport of data.airports) {
+      const option = document.createElemenet("option");
+      option.value = airports.code;
+      option.textContent = airport.name + ", " + airport.city;
+      list.appendChild(option);
+    }
+  } catch (error) {
+    // Suggestions are only a help: if they fail, the visitor can still type a code
+  }
+}
+
+// Wait until the visitor pauses typing, then ask for suggestions
+function watchAirportBox(input, list) {
+  input.addEventListener("input", function () {
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(function () {
+      loadAirportSuggestions(input, list);
+    }, 300);
+  });
+}
+
 // When the visitor presses "Search flights", search without reloading the page
 searchForm.addEventListener("submit", async function (event) {
   event.preventDefault();
@@ -320,3 +356,10 @@ searchInput.addEventListener("input", updateResults);
 
 // Only allow dates from tomorrow onwards in the calendar
 dateInput.min = dateInDays(1);
+
+// Suggest airports as the visitor types in the From and To boxes
+watchAirportBox(originInput, document.getElementById("origin-options"));
+watchAirportBox(
+  destinationInput,
+  document.getElementById("destination-options"),
+);

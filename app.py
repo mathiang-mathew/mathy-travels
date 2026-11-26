@@ -11,20 +11,24 @@ DUFFEL_TOKEN = os.getenv("DUFFEL_TOKEN")
 DUFFEL_URL = "https://api.duffel.com"
 app = Flask(__name__)
 
-# Ask Duffel for flights on one route and date, and return its answer
 
-
-def search_flights(origin, destination, date, adults, cabin):
-    passengers = []
-    for number in range(adults):
-        passengers.append({"type": "adult"})
-
-    headers = {
+# The headers every Duffel request needs: our token and the API version
+def duffel_headers():
+    return {
         "Authorization": f"Bearer {DUFFEL_TOKEN}",
         "Duffel-Version": "v2",
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
+
+
+# Ask Duffel for flights on one route and date, and return its answer
+def search_flights(origin, destination, date, adults, cabin):
+    passengers = []
+    for number in range(adults):
+        passengers.append({"type": "adult"})
+
+    headers = duffel_headers()
 
     body = {
         "data": {
@@ -44,9 +48,40 @@ def search_flights(origin, destination, date, adults, cabin):
     response = requests.post(url, json=body, headers=headers, timeout=30)
     return response.json()
 
+
+# Remember airport answers we already got, so the same text does not ask Duffel twice
+airport_cache = {}
+
+# Ask Duffel for airports whose name or city matches what the vistor typed
+
+
+def find_airports(query):
+    if query in airport_cache:
+        return airport_cache[query]
+
+    url = DUFFEL_URL + "/places/suggestions"
+    response = requests.get(
+        url, params={"query": query}, headers=duffel_headers(), timeout=10)
+    result = response.json()
+
+    airports = []
+    for place in result.get("data", []):
+        if place["type"] == "airport":
+            airports.append({
+                "code": place["iata_code"],
+                "name": place["name"],
+                "city": place["city_name"] or "",
+            })
+
+    airports = airports[:8]
+
+    if "data" in result:
+        airport_cache[query] = airports
+
+    return airports
+
+
 # Turn Duffel's duration code like "PT6H25M" into a number of minutes
-
-
 def duration_in_minutes(duration):
     total = 0
     number = ""
@@ -65,17 +100,15 @@ def duration_in_minutes(duration):
             number = ""
     return total
 
+
 # Turn a number of minutes into a label people can read, like "6h 25m"
-
-
 def format_duration(minutes):
     hours = minutes // 60
     leftover_minutes = minutes % 60
     return f"{hours}h {leftover_minutes}m"
 
+
 # Pick out the few details the results page needs from one Duffel offer
-
-
 def simplify_offer(offer):
     journey = offer["slices"][0]
     segments = journey["segments"]
@@ -111,16 +144,14 @@ def simplify_offer(offer):
 def home():
     return render_template("index.html")
 
+
 # A small check that tells us the server is up and answering
-
-
 @app.route("/api/health")
 def health():
     return {"status": "ok"}
 
+
 # Search flights using the details the visitor sends in the address
-
-
 @app.route("/api/search")
 def search():
     origin = request.args.get("origin", "").strip().upper()
@@ -135,7 +166,7 @@ def search():
 
     allowed_cabins = ["economy", "premium_economy", "business", "first"]
     if cabin not in allowed_cabins:
-        return {"error": "Choose economy, premium economy, business or first"}
+        return {"error": "Choose economy, premium economy, business or first"}, 400
 
     adults = int(adults)
 
@@ -148,6 +179,7 @@ def search():
     except requests.exceptions.RequestException:
         message = "We could not reach the airline system. Try again in a minute."
         return {"error": message}, 503
+
     if "errors" in result:
         message = result["errors"][0]["message"]
         return {"error": message}, 400
@@ -157,6 +189,22 @@ def search():
         flights.append(simplify_offer(offer))
 
     return {"flights": flights}
+
+
+# Airport suggestions for the From and To boxes, like "nair" for Nairobi (NBO)
+@app.route("/api/airports")
+def airports():
+    query = request.args.get("query", "").strip().lower()
+
+    if len(query) < 2:
+        return {"airports": []}
+
+    try:
+        found = find_airports(query)
+    except requests.exceptions.RequestException:
+        return {"airports": []}
+
+    return {"airports": found}
 
 
 if __name__ == "__main__":

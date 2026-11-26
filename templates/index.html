@@ -69,9 +69,12 @@
               name="origin"
               type="text"
               value="JUB"
-              placeholder="Where to?"
+              placeholder="City or airport"
+              list="origin-options"
+              autocomplete="off"
               required
             />
+            <datalist id="origin-options"></datalist>
           </div>
 
           <div class="field">
@@ -81,6 +84,8 @@
               name="destination"
               type="text"
               placeholder="Where to?"
+              list="destination-options"
+              autocomplete="off"
               required
             />
           </div>
